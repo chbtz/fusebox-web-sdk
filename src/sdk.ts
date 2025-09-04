@@ -11,6 +11,11 @@ import {
   type ISendUserOperationResponse,
   type UserOperationMiddlewareFn,
 } from 'userop'
+
+// Extend IClientOpts to include our custom skipFetchSetup option
+interface IExtendedClientOpts extends IClientOpts {
+  skipFetchSetup?: boolean
+}
 import { verifyingPaymaster } from 'userop/dist/preset/middleware'
 import { SmartAccountClient } from 'permissionless'
 
@@ -106,7 +111,7 @@ export class FuseSDK {
       withPaymaster?: boolean
       paymasterContext?: Record<string, unknown>
       opts?: IPresetBuilderOpts
-      clientOpts?: IClientOpts
+      clientOpts?: IExtendedClientOpts
       jwtToken?: string
       signature?: string
       baseUrl?: string
@@ -324,7 +329,7 @@ export class FuseSDK {
       withPaymaster?: boolean
       paymasterContext?: Record<string, unknown>
       opts?: IPresetBuilderOpts
-      clientOpts?: IClientOpts
+      clientOpts?: IExtendedClientOpts
       jwtToken?: string
       signature?: string
       baseUrl?: string
@@ -339,7 +344,7 @@ export class FuseSDK {
     this.client = await Client.init(FuseSDK._getBundlerRpc(publicApiKey, baseUrl), {
       ...clientOpts,
       skipFetchSetup,
-    })
+    } as IExtendedClientOpts)
 
     this.wallet = await EtherspotWallet.init(
       credentials,
