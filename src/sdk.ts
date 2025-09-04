@@ -100,8 +100,8 @@ export class FuseSDK {
       jwtToken,
       signature,
       baseUrl = Variables.BASE_URL,
-      isTestnet = false
-      skipFetchSetup = false
+      isTestnet = false,
+      skipFetchSetup = false,
     }: {
       withPaymaster?: boolean
       paymasterContext?: Record<string, unknown>
@@ -117,22 +117,23 @@ export class FuseSDK {
     const fuseSDK = new FuseSDK(publicApiKey, baseUrl)
 
     if (isEOASigner(credentials)) {
-      await fuseSDK._initializeEtherspotWallet(
-        publicApiKey,
-        credentials,
-        {
-          withPaymaster,
-          paymasterContext,
-          opts,
-          clientOpts,
-          jwtToken,
-          signature,
-          baseUrl,
-          skipFetchSetup,
-        }
-      )
+      await fuseSDK._initializeEtherspotWallet(publicApiKey, credentials, {
+        withPaymaster,
+        paymasterContext,
+        opts,
+        clientOpts,
+        jwtToken,
+        signature,
+        baseUrl,
+        skipFetchSetup,
+      })
     } else {
-      const pimlico = new Pimlico(credentials, FuseSDK._getBundlerRpc(publicApiKey, baseUrl, BundlerProvider.Pimlico), withPaymaster, isTestnet)
+      const pimlico = new Pimlico(
+        credentials,
+        FuseSDK._getBundlerRpc(publicApiKey, baseUrl, BundlerProvider.Pimlico),
+        withPaymaster,
+        isTestnet
+      )
       fuseSDK.client = await pimlico.smartAccountClient()
     }
 
@@ -318,6 +319,7 @@ export class FuseSDK {
       jwtToken,
       signature,
       baseUrl = Variables.BASE_URL,
+      skipFetchSetup = false,
     }: {
       withPaymaster?: boolean
       paymasterContext?: Record<string, unknown>
@@ -326,6 +328,7 @@ export class FuseSDK {
       jwtToken?: string
       signature?: string
       baseUrl?: string
+      skipFetchSetup?: boolean
     } = {}
   ): Promise<EtherspotWallet> {
     let paymasterMiddleware: UserOperationMiddlewareFn | undefined
@@ -347,10 +350,10 @@ export class FuseSDK {
         paymasterMiddleware: opts?.paymasterMiddleware ?? paymasterMiddleware,
         overrideBundlerRpc: opts?.overrideBundlerRpc,
         nonceKey: opts?.nonceKey,
+        skipFetchSetup,
       },
       signature
     )
-
 
     if (jwtToken) {
       this._jwtToken = jwtToken
@@ -366,7 +369,11 @@ export class FuseSDK {
    * @param publicApiKey is required to authenticate with the Fuse API.
    * @returns
    */
-  private static _getBundlerRpc(publicApiKey: string, baseUrl: string, provider: BundlerProvider = BundlerProvider.Etherspot): string {
+  private static _getBundlerRpc(
+    publicApiKey: string,
+    baseUrl: string,
+    provider: BundlerProvider = BundlerProvider.Etherspot
+  ): string {
     return `https://${baseUrl}/api/v0/bundler?apiKey=${publicApiKey}&provider=${provider}`
   }
 

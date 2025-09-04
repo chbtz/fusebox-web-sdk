@@ -34,7 +34,10 @@ export class EtherspotWallet extends UserOperationBuilder {
   private constructor(signer: EOASigner, rpcUrl: string, opts?: IPresetBuilderOpts) {
     super()
     this.signer = signer
-    this.provider = new BundlerJsonRpcProvider(rpcUrl).setBundlerRpc(opts?.overrideBundlerRpc)
+    this.provider = new BundlerJsonRpcProvider({
+      url: rpcUrl,
+      skipFetchSetup: opts?.skipFetchSetup || false,
+    }).setBundlerRpc(opts?.overrideBundlerRpc)
     this.entryPoint = EntryPoint__factory.connect(
       opts?.entryPoint || ERC4337.EntryPoint,
       this.provider
