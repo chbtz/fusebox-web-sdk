@@ -31,10 +31,17 @@ export class EtherspotWallet extends UserOperationBuilder {
   proxy: EtherspotWalletContract
   nonceKey: number
 
-  private constructor(signer: EOASigner, rpcUrl: string, opts?: IPresetBuilderOpts) {
+  private constructor(
+    signer: EOASigner,
+    rpcUrl: string,
+    opts?: IPresetBuilderOpts & { skipFetchSetup?: boolean }
+  ) {
     super()
     this.signer = signer
-    this.provider = new BundlerJsonRpcProvider(rpcUrl).setBundlerRpc(opts?.overrideBundlerRpc)
+    this.provider = new BundlerJsonRpcProvider({
+      skipFetchSetup: opts?.skipFetchSetup || false,
+      url: rpcUrl,
+    }).setBundlerRpc(opts?.overrideBundlerRpc)
     this.entryPoint = EntryPoint__factory.connect(
       opts?.entryPoint || ERC4337.EntryPoint,
       this.provider
@@ -62,7 +69,7 @@ export class EtherspotWallet extends UserOperationBuilder {
   public static async init(
     signer: EOASigner,
     rpcUrl: string,
-    opts?: IPresetBuilderOpts,
+    opts?: IPresetBuilderOpts & { skipFetchSetup?: boolean },
     signature?: string
   ): Promise<EtherspotWallet> {
     const instance = new EtherspotWallet(signer, rpcUrl, opts)
