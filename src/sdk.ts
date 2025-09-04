@@ -101,6 +101,7 @@ export class FuseSDK {
       signature,
       baseUrl = Variables.BASE_URL,
       isTestnet = false
+      skipFetchSetup = false
     }: {
       withPaymaster?: boolean
       paymasterContext?: Record<string, unknown>
@@ -110,6 +111,7 @@ export class FuseSDK {
       signature?: string
       baseUrl?: string
       isTestnet?: boolean
+      skipFetchSetup?: boolean
     } = {}
   ): Promise<FuseSDK> {
     const fuseSDK = new FuseSDK(publicApiKey, baseUrl)
@@ -126,6 +128,7 @@ export class FuseSDK {
           jwtToken,
           signature,
           baseUrl,
+          skipFetchSetup,
         }
       )
     } else {
